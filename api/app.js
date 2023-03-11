@@ -1,13 +1,34 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyparser = require('body-parser');
+require('dotenv').config();
 
 const app = express();
 
-const port = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000;
 
+app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json());
+
+const uri = `mongodb://mongodb:27017/docker-db`;
+mongoose.connect(uri,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+)
+.then(() => console.log('Base de datos conectada'))
+.catch(error => console.log('Error en DB: ', error));
+
+const authRoutes = require('./routes/authRouter');
+const productRoutes = require('./routes/productRouter');
+const enterpriseRoutes = require('./routes/enterpriseRouter');
+const verifyToken = require('./middlewares/validate-token');
+
+app.use('/user', authRoutes);
+app.use('/products', verifyToken, productRoutes);
+app.use('/enterprises', verifyToken, enterpriseRoutes);
 app.get('/', (req, res) => {
   res.send('Home Route');
 });
 
-app.listen(port, () =>
-  console.log(`Server running on port ${port}, http://localhost:${port}`)
+app.listen(PORT, () =>
+  console.log(`Server running on port ${PORT}, http://localhost:${PORT}`)
 );

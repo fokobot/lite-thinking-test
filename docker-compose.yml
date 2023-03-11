@@ -1,20 +1,44 @@
-version: '3.8'
+version: "3.8"
 services:
+  mongodb:
+    image: "mongo"
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./env/mongo.env
+  mongo-express:
+    image: mongo-express
+    container_name: mexpress
+    env_file:
+      - ./env/mongo-express.env
+    links:
+      - mongodb
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
   api:
     build: ./api
-    container_name: api_backend
     ports:
-      - '4000:4000'
+      - "4000:4000"
     volumes:
-      - /api:/app
+      - logs:/app/logs
+      - ./api:/app
       - /app/node_modules
+    env_file:
+      - ./env/api.env
+    depends_on:
+      - mongodb
   client:
     build: ./client
-    container_name: client_frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
     volumes:
-      - /client:/app
-      - /app/node_modules
+      - ./client/src:/app/src
     stdin_open: true
     tty: true
+    depends_on:
+      - api
+
+volumes:
+  data:
+  logs:
