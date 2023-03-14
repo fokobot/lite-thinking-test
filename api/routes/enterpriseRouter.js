@@ -8,8 +8,8 @@ router.post('/', EnterprisesController.createEnterprise);
 
 router.get('/:userId', EnterprisesController.getEnterpriseByUser);
 
-router.patch('/:productId', EnterprisesController.updateEnterprise);
+router.patch('/:enterpriseId', EnterprisesController.updateEnterprise);
 
-router.delete('/:productId', EnterprisesController.deleteEnterprise);
+router.delete('/:enterpriseId', EnterprisesController.deleteEnterprise);
 
 module.exports = router;

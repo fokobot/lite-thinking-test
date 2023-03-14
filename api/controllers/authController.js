@@ -60,8 +60,8 @@ exports.login = async (req, res) => {
         id: user._id
     }, process.env.TOKEN_SECRET)
 
-    res.header('auth-token', token).json({
+    res.header('Authorization', token).json({
         error: null,
-        data: { token }
+        data: { token, user: { name: user.name, id: user._id } }
     });
 }

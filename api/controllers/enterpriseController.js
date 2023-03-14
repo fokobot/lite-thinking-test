@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Enterprise = require('../models/Enterprise');
+const Product = require('../models/Product');
 
 exports.getAllEnterprises = async (req, res) => {
     try {
@@ -10,7 +11,7 @@ exports.getAllEnterprises = async (req, res) => {
             enterprises: enterprises
         }
         if (enterprises.length >= 0) {
-            res.status(200).json(response);
+            res.status(200).json({ data: response });
         } else {
             res.status(404).json({
                 message: 'No companies found'
@@ -31,7 +32,7 @@ exports.createEnterprise = async (req, res) => {
         address: req.body.address,
         nit: req.body.nit,
         phone: req.body.phone,
-        user: req.body.user,
+        user: req.user.id,
     });
 
     try {
@@ -39,7 +40,7 @@ exports.createEnterprise = async (req, res) => {
         console.log(result);
         res.status(201).json({
             message: 'Enterprise created sucesfully',
-            createdEnterprise: result
+            data: result
         });
     } catch (error) {
         console.log(error);
@@ -55,7 +56,7 @@ exports.getEnterpriseByUser = async (req, res) => {
         let enterprise = await Enterprise.findOne({ user: id });
         if (enterprise) {
             res.status(200).json({
-                enterprise: enterprise
+                data: enterprise
             });
         } else {
             res.status(404).json({
@@ -78,10 +79,13 @@ exports.updateEnterprise = async (req, res) => {
             address: req.body.address,
             nit: req.body.nit,
             phone: req.body.phone
+        }, {
+            new: true
         });
         console.log(result);
         res.status(200).json({
-            message: `Product ${id} updated sucesfully`,
+            message: `Enterprise ${id} updated sucesfully`,
+            data: result,
         })
     } catch (error) {
         console.log(error);
@@ -95,8 +99,9 @@ exports.updateEnterprise = async (req, res) => {
 exports.deleteEnterprise = async (req, res) => {
     try {
         const id = req.params.enterpriseId;
-        let result = await Enterprise.remove({ _id: id })
-        res.status(200).json({ message: "Enterprise deleted sucessfully", result });
+        let result = await Enterprise.remove({ _id: id });
+        await Product.remove({ enterprise: id });
+        res.status(200).json({ message: "Enterprise deleted sucessfully", data: result });
     } catch (error) {
         console.log(error)
         res.status(500).json({

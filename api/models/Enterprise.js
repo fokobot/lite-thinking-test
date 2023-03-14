@@ -16,16 +16,22 @@ const enterpriseSchema = mongoose.Schema({
     nit: {
         type: Number,
         required: true,
-        minlength: 6
+        min: 6,
+        max: 32,
+        index: true,
+        unique: true
     },
     phone: {
         type: Number,
         required: true,
-        minlength: 6
+        min: 6,
+        max: 16,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+        index: true,
+        required: true
     },
 },
     {

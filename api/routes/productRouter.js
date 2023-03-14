@@ -12,4 +12,6 @@ router.patch('/:productId', ProductsController.updateProduct);
 
 router.delete('/:productId', ProductsController.deleteProduct);
 
+router.post('/pdf/:enterpriseId', ProductsController.generatePDF);
+
 module.exports = router;

@@ -2,15 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
 
 const PORT = process.env.PORT || 4000;
 
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 
-const uri = `mongodb://mongodb:27017/docker-db`;
+const uri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongodb:27017/docker-db?authSource=admin`;
 mongoose.connect(uri,
     { useNewUrlParser: true, useUnifiedTopology: true }
 )

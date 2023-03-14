@@ -17,6 +17,7 @@ const productSchema = mongoose.Schema({
     enterprise: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Enterprise',
+        index: true
     },
 
 },

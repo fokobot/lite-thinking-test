@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
+const PDFDocument = require("pdfkit-table");
+const AWS = require('aws-sdk');
+const fs = require("fs");
+const path = require('path');
+const nodemailer = require("nodemailer");
 
 const Product = require('../models/Product');
+const Enterprise = require('../models/Enterprise');
 
 exports.getAllProducts = async (req, res) => {
     try {
@@ -10,7 +16,7 @@ exports.getAllProducts = async (req, res) => {
             products: products
         }
         if (products.length >= 0) {
-            res.status(200).json(response);
+            res.status(200).json({ data: response });
         } else {
             res.status(404).json({
                 message: 'No companies found'
@@ -25,21 +31,28 @@ exports.getAllProducts = async (req, res) => {
 }
 
 exports.createProduct = async (req, res) => {
-    const product = new Product({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        quantity: req.body.quantity,
-        price: req.body.price,
-        enterprise: req.body.enterprise
-    });
-
     try {
-        let result = await product.save();
-        console.log(result);
-        res.status(201).json({
-            message: 'Product created sucesfully',
-            createdProduct: result
-        });
+        const enterprise = await Enterprise.findOne({ user: req.user.id });
+        if (enterprise) {
+            const product = new Product({
+                _id: new mongoose.Types.ObjectId(),
+                name: req.body.name,
+                quantity: req.body.quantity,
+                price: req.body.price,
+                enterprise: enterprise._id
+            });
+
+            let result = await product.save();
+            console.log(result);
+            res.status(201).json({
+                message: 'Product created sucesfully',
+                data: result
+            });
+        } else {
+            res.status(404).json({
+                message: 'The user does not have a enterprise!'
+            });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -51,10 +64,10 @@ exports.createProduct = async (req, res) => {
 exports.getProdutsByEnterprise = async (req, res) => {
     try {
         const id = req.params.enterpriseId;
-        let products = await Enterprise.find({ enterprise: id });
+        let products = await Product.find({ enterprise: id });
         if (products.length >= 0) {
             res.status(200).json({
-                products: products
+                data: products
             });
         } else {
             res.status(404).json({
@@ -77,10 +90,13 @@ exports.updateProduct = async (req, res) => {
             quantity: req.body.quantity,
             price: req.body.price,
             enterprise: req.body.enterprise
+        }, {
+            new: true
         });
         console.log(result);
         res.status(200).json({
             message: `Product ${id} updated sucesfully`,
+            data: result
         })
     } catch (error) {
         console.log(error);
@@ -95,11 +111,98 @@ exports.deleteProduct = async (req, res) => {
     try {
         const id = req.params.productId;
         let result = await Product.remove({ _id: id })
-        res.status(200).json({ message: "Product deleted sucessfully", result });
+        res.status(200).json({ message: "Product deleted sucessfully", data: result });
     } catch (error) {
         console.log(error)
         res.status(500).json({
             error: error
         })
+    }
+}
+
+exports.generatePDF = async (req, res) => {
+    try {
+        const id = req.params.enterpriseId;
+        let products = await Product.find({ enterprise: id });
+        if (products.length > 0) {
+            const rows = products.map(product => {
+                return [product.name, product.price, product.quantity];
+            })
+            let doc = new PDFDocument({ margin: 30, size: 'A4' });
+            const table = {
+                title: "Products Inventory",
+                headers: ["Name", "Price", "Quantity"],
+                rows,
+            };
+            await doc.table(table, {
+                columnsSize: [200, 100, 100],
+            });
+            let writeStream = fs.createWriteStream(`./files/${id}.pdf`);
+            doc.pipe(writeStream);
+            doc.end();
+
+            writeStream.on('finish', async () => {
+                const appDir = path.dirname(require.main.filename);
+                const fileContent = fs.readFileSync(appDir + `/${id}.pdf`);
+
+                const S3 = new AWS.S3({
+                    region: 'us-east-1',
+                    accessKeyId: process.env.ACCESS_KEY_ID,
+                    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+                });
+
+                let bucket = `lite-thinking-test-fo`;
+
+                const paramsPdf = {
+                    Key: `${id}.pdf`,
+                    Body: fileContent,
+                    Bucket: bucket,
+                    ContentType: 'application/pdf'
+                };
+                await S3.upload(paramsPdf).promise();
+                let pdfUrl = S3.getSignedUrl("getObject", { Bucket: bucket, Key: `${id}.pdf`, Expires: 3600 });
+                if (req.body.email) {
+                    await sendEmailWithAttachmentBase64(req.body.email);
+                }
+                res.status(200).json({
+                    message: `PDF generated successfully`,
+                    data: pdfUrl
+                });
+            });
+        } else {
+            res.status(404).json({
+                message: 'No products found for the provided ID'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            error: error
+        });
+    }
+}
+
+async function sendEmailWithAttachmentBase64(emailTo, attachments) {
+    var transporter;
+    var ses = new AWS.SES({
+        region: 'us-east-1',
+        accessKeyId: process.env.ACCESS_KEY_ID,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    });
+    transporter = nodemailer.createTransport({
+        SES: ses,
+    });
+    try {
+        let data = await transporter.sendMail({
+            from: `fabiani@uninorte.edu.co`,
+            to: emailTo,
+            subject: "Products Inventory",
+            html: "<html><head></head><body><h1>Hello!</h1><p>Please see the attached file for a list of products inventory.</p></body></html >",
+            // attachments: attachments,
+        });
+        return data;
+    } catch (err) {
+        console.log("Email error:", err);
+        throw err;
     }
 }

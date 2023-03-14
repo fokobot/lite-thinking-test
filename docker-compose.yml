@@ -31,9 +31,11 @@ services:
   client:
     build: ./client
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - ./client/src:/app/src
+    env_file:
+      - ./env/client.env
     stdin_open: true
     tty: true
     depends_on:
