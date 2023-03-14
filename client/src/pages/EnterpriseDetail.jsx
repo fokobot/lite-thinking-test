@@ -6,6 +6,13 @@ import * as Yup from 'yup';
 import makeFetch from '../utils/fetch';
 import { EnterpriseContext } from "../context/enterprises/EnterpriseContext";
 import { Navbar } from "../components/Navbar";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 const SedPDFSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Required')
