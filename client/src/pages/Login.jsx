@@ -2,6 +2,10 @@ import React, { useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { EnterpriseContext } from '../context/enterprises/EnterpriseContext';
 import { Formik, Form, Field } from 'formik';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
 
 const LoginSchema = Yup.object().shape({
@@ -19,38 +23,46 @@ export const Login = () => {
 
     useEffect(() => {
         if (token) {
-            // navigate(`/user/enterprise`);
-            navigate(`/enterprises`);
+            navigate(`/user/enterprise`);
         }
     }, [token]);
 
-    const handleSubmit = (values) => {
+    const handleSubmitForm = (values) => {
         setToken({ login: values });
     }
 
     return (
-        <div>
-            <h1>Login</h1>
-            <Formik
-                initialValues={{
-                    email: '',
-                    password: '',
-                }}
-                validationSchema={LoginSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ errors, touched }) => (
-                    <Form>
-                        <Field name="email" type="email" placeholder="Email" />
-                        {errors.email && touched.email ? <div>{errors.email}</div> : null}
-                        <Field name="password" type="password" placeholder="Password" />
-                        {errors.password && touched.password ? (
-                            <div>{errors.password}</div>
-                        ) : null}
-                        <button type="submit">Login</button>
-                    </Form>
-                )}
-            </Formik>
-        </div>
+        <Formik
+            initialValues={{
+                email: '',
+                password: '',
+            }}
+            validationSchema={LoginSchema}
+            onSubmit={handleSubmitForm}
+        >
+            {({ errors, touched, handleChange, handleSubmit }) => (
+                <Form>
+                    <Grid container spacing={3} alignItems="center" direction={'column'}>
+                        <Grid item xs={12}>
+                            <Typography variant="h4">Sign In</Typography>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <TextField onChange={handleChange} name="email" label="Email"
+                                helperText={touched.email && errors.email}
+                                error={touched.email && errors.email} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField onChange={handleChange} name="password" type="password" label="Password"
+                                helperText={touched.password && errors.password}
+                                error={touched.password && errors.password} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>Login</Button>
+                        </Grid>
+                    </Grid>
+                </Form>
+            )}
+        </Formik>
     );
 };

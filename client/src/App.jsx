@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Enterprises } from "./pages/Enterprises";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
+import { Home } from "./pages/Home";
 import { Navbar } from "./components/Navbar";
 import { EnterprisesDetail } from "./pages/EnterpriseDetail";
 import { EnterpriseState } from "./context/enterprises/EnterpriseState";
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
     {
         path: "/enterprises",
         element: <EnterprisesList />,
+    },
+    {
+        path: "/",
+        element: <Home />,
     },
 ]);
 

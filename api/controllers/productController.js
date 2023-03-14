@@ -123,7 +123,7 @@ exports.deleteProduct = async (req, res) => {
 exports.generatePDF = async (req, res) => {
     try {
         const id = req.params.enterpriseId;
-        let products = await Product.find({ enterprise: id });
+        let products = await Product.find({ enterprise: id }).sort([['name', 1]]);
         if (products.length > 0) {
             const rows = products.map(product => {
                 return [product.name, product.price, product.quantity];
@@ -137,7 +137,7 @@ exports.generatePDF = async (req, res) => {
             await doc.table(table, {
                 columnsSize: [200, 100, 100],
             });
-            let writeStream = fs.createWriteStream(`./files/${id}.pdf`);
+            let writeStream = fs.createWriteStream(`./${id}.pdf`);
             doc.pipe(writeStream);
             doc.end();
 
@@ -162,7 +162,7 @@ exports.generatePDF = async (req, res) => {
                 await S3.upload(paramsPdf).promise();
                 let pdfUrl = S3.getSignedUrl("getObject", { Bucket: bucket, Key: `${id}.pdf`, Expires: 3600 });
                 if (req.body.email) {
-                    await sendEmailWithAttachmentBase64(req.body.email);
+                    await sendEmailWithAttachmentBase64(req.body.email, appDir + `/${id}.pdf`);
                 }
                 res.status(200).json({
                     message: `PDF generated successfully`,
@@ -183,22 +183,21 @@ exports.generatePDF = async (req, res) => {
 }
 
 async function sendEmailWithAttachmentBase64(emailTo, attachments) {
-    var transporter;
-    var ses = new AWS.SES({
+    let ses = new AWS.SES({
         region: 'us-east-1',
         accessKeyId: process.env.ACCESS_KEY_ID,
         secretAccessKey: process.env.SECRET_ACCESS_KEY,
     });
-    transporter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
         SES: ses,
     });
     try {
         let data = await transporter.sendMail({
-            from: `fabiani@uninorte.edu.co`,
+            from: `fabian.osorio.990628@gmail.com`,
             to: emailTo,
             subject: "Products Inventory",
-            html: "<html><head></head><body><h1>Hello!</h1><p>Please see the attached file for a list of products inventory.</p></body></html >",
-            // attachments: attachments,
+            html: "<html><head></head><body><p>Please see the attached file for a list of products inventory.</p></body></html >",
+            attachments: [fs.createReadStream(attachments)],
         });
         return data;
     } catch (err) {

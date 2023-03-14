@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import makeFetch from '../utils/fetch';
@@ -14,6 +14,13 @@ export const EnterprisesDetail = (props) => {
     const [products, setProducts] = useState([]);
     const { token } = useContext(EnterpriseContext);
     const { enterpriseId } = useParams();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!token) {
+            navigate(`/login`);
+        }
+    }, []);
 
     useEffect(() => {
         let response = makeFetch(token, 'GET', `products/${enterpriseId}`);
@@ -22,23 +29,34 @@ export const EnterprisesDetail = (props) => {
             .then(response => setProducts(response.data))
     }, []);
 
+    const handleClickPDF = () => {
+        let response = makeFetch(token, 'POST', `products/pdf/${enterpriseId}`);
+        response
+            .then(response => response.json())
+            .then(response => window.open(response.data))
+    }
+
+    const handleSubmitPDF = (values) => {
+        let response = makeFetch(token, 'POST', `products/pdf/${enterpriseId}`, { email: values.email });
+        response
+            .then(response => response.json())
+            .then(response => window.open(response.data))
+    }
+
     return (
         <div>
-            <button type="button">Generate PDF!</button>
+            <button type="button" onClick={handleClickPDF}>Generate PDF!</button>
             <Formik
                 initialValues={{
-                    pdfEmail: ''
+                    email: ''
                 }}
                 validationSchema={SedPDFSchema}
-                onSubmit={values => {
-                    dispatch({ type: 'SET_TOKEN', login: values })
-                    navigate("/enterprises");
-                }}
+                onSubmit={handleSubmitPDF}
             >
                 {({ errors, touched }) => (
                     <Form>
-                        <Field name="pdfEmail" type="email" placeholder="Email to send PDF" />
-                        {errors.pdfEmail && touched.pdfEmail ? <div>{errors.pdfEmail}</div> : null}
+                        <Field name="email" type="email" placeholder="Email to send PDF" />
+                        {errors.email && touched.email ? <div>{errors.email}</div> : null}
                         <button type="submit">Send PDF</button>
                     </Form>
                 )}

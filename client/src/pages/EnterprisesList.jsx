@@ -11,6 +11,12 @@ export const EnterprisesList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (!token) {
+            navigate(`/login`);
+        }
+    }, []);
+
+    useEffect(() => {
         let response = makeFetch(token, 'GET', `enterprises`);
         response
             .then(response => response.json())

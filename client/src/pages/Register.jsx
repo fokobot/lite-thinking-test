@@ -2,6 +2,10 @@ import React, { useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { EnterpriseContext } from '../context/enterprises/EnterpriseContext';
 import { Formik, Form, Field } from 'formik';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
 
 const SignupSchema = Yup.object().shape({
@@ -37,38 +41,48 @@ export const Register = () => {
     }
 
     return (
-        <div>
-            <h1>Signup</h1>
-            <Formik
-                initialValues={{
-                    name: '',
-                    email: '',
-                    password: '',
-                    passwordConfirmation: ''
-                }}
-                validationSchema={SignupSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ errors, touched }) => (
-                    <Form>
-                        <Field name="name" placeholder="Full Name" />
-                        {errors.name && touched.name ? (
-                            <div>{errors.name}</div>
-                        ) : null}
-                        <Field name="email" type="email" placeholder="Email" />
-                        {errors.email && touched.email ? <div>{errors.email}</div> : null}
-                        <Field name="password" type="password" placeholder="Password" />
-                        {errors.password && touched.password ? (
-                            <div>{errors.password}</div>
-                        ) : null}
-                        <Field name="passwordConfirmation" type="password" placeholder="Comfirm Password" />
-                        {errors.passwordConfirmation && touched.passwordConfirmation ? (
-                            <div>{errors.passwordConfirmation}</div>
-                        ) : null}
-                        <button type="submit">SignUp</button>
-                    </Form>
-                )}
-            </Formik>
-        </div>
+        <Formik
+            initialValues={{
+                name: '',
+                email: '',
+                password: '',
+                passwordConfirmation: ''
+            }}
+            validationSchema={SignupSchema}
+            onSubmit={handleSubmit}
+        >
+            {({ errors, touched, handleChange, handleSubmit }) => (
+                <Form>
+                    <Grid container spacing={3} alignItems="center" direction={'column'}>
+                        <Grid item xs={12}>
+                            <Typography variant="h4">Sign Up</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField onChange={handleChange} name="name" label="Name"
+                                helperText={touched.name && errors.name}
+                                error={touched.name && errors.name} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField onChange={handleChange} name="email" label="Email"
+                                helperText={touched.email && errors.email}
+                                error={touched.email && errors.email} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField onChange={handleChange} name="password" type="password" label="Password"
+                                helperText={touched.password && errors.password}
+                                error={touched.password && errors.password} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField onChange={handleChange} name="passwordConfirmation" type="password" label="Password Confirmation"
+                                helperText={touched.passwordConfirmation && errors.passwordConfirmation}
+                                error={touched.passwordConfirmation && errors.passwordConfirmation} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>SignUp</Button>
+                        </Grid>
+                    </Grid>
+                </Form>
+            )}
+        </Formik>
     );
 };

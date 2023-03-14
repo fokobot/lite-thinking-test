@@ -1,7 +1,9 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { Formik, Form, Field } from 'formik';
+import { EnterpriseContext } from '../context/enterprises/EnterpriseContext';
 import * as Yup from 'yup';
+import makeFetch from '../utils/fetch';
 
 const CreateProductSchema = Yup.object().shape({
     name: Yup.string()
@@ -12,13 +14,15 @@ const CreateProductSchema = Yup.object().shape({
     price: Yup.number()
 });
 
-export const FormProduct = () => {
-    useEffect(() => {
-        // data fetching here
-    }, []);
+export const FormProduct = ({newProduct, setNewProduct}) => {
+    const { token } = useContext(EnterpriseContext);
 
-    const [enterprise, setEnterprise] = useState({});
-    const [isCreating, setIsLoading] = useState(true);
+    const handleSubmit = (values) => {
+        let response = makeFetch(token, 'POST', `products`, values);
+        response
+            .then(response => response.json())
+            .then(response => setNewProduct(true))
+    }
 
     return (
         <div>
@@ -29,22 +33,16 @@ export const FormProduct = () => {
                     price: ''
                 }}
                 validationSchema={CreateProductSchema}
-                onSubmit={values => {
-                    console.log(values);
-                }}
+                onSubmit={handleSubmit}
             >
                 {({ errors, touched }) => (
                     <Form>
                         <Field name="name" placeholder="Product Name" />
-                        {errors.name && touched.name ? (
-                            <div>{errors.name}</div>
-                        ) : null}
+                        {errors.name && touched.name && (<div>{errors.name}</div>)}
                         <Field name="quantity" placeholder="Product Quantity" />
-                        {errors.quantity && touched.quantity ? <div>{errors.quantity}</div> : null}
+                        {errors.quantity && touched.quantity && <div>{errors.quantity}</div>}
                         <Field name="price" placeholder="Product Price" />
-                        {errors.price && touched.price ? (
-                            <div>{errors.price}</div>
-                        ) : null}
+                        {errors.price && touched.price && (<div>{errors.price}</div>)}
                         <button type="submit">Save Product</button>
                     </Form>
                 )}
