@@ -5,6 +5,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import makeFetch from '../utils/fetch';
 import { EnterpriseContext } from "../context/enterprises/EnterpriseContext";
+import { Navbar } from "../components/Navbar";
 
 const SedPDFSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Required')
@@ -45,6 +46,7 @@ export const EnterprisesDetail = (props) => {
 
     return (
         <div>
+            <Navbar />
             <button type="button" onClick={handleClickPDF}>Generate PDF!</button>
             <Formik
                 initialValues={{
@@ -61,21 +63,29 @@ export const EnterprisesDetail = (props) => {
                     </Form>
                 )}
             </Formik>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                </tr>
-                {products.map(product => {
-                    return (
-                        <tr key={product._id}>
-                            <th>{product.name}</th>
-                            <th>{product.price}</th>
-                            <th>{product.quantity}</th>
-                        </tr>);
-                })}
-            </table>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Price</TableCell>
+                            <TableCell>Quantity</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {products.map((product) => (
+                            <TableRow
+                                key={product.name}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">{product.name}</TableCell>
+                                <TableCell align="right">{product.price}</TableCell>
+                                <TableCell align="right">{product.quantity}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     );
 };

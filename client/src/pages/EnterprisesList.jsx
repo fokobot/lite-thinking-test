@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from 'react';
 import { FormEnterprise } from "../components/FormEnterprise";
 import { useNavigate } from "react-router-dom";
 import { EnterpriseContext } from "../context/enterprises/EnterpriseContext";
+import { Navbar } from "../components/Navbar";
 import makeFetch from '../utils/fetch';
 
 export const EnterprisesList = () => {
@@ -29,6 +30,7 @@ export const EnterprisesList = () => {
 
     return (
         <div>
+            <Navbar />
             <h1>Enterprise</h1>
             {enterprises.map(enterprise => {
                 return (

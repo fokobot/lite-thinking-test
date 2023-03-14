@@ -49,13 +49,13 @@ export const Login = () => {
 
                         <Grid item xs={12}>
                             <TextField onChange={handleChange} name="email" label="Email"
-                                helperText={touched.email && errors.email}
-                                error={touched.email && errors.email} />
+                                helperText={errors.email}
+                                error={errors.email} />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField onChange={handleChange} name="password" type="password" label="Password"
-                                helperText={touched.password && errors.password}
-                                error={touched.password && errors.password} />
+                                helperText={errors.password}
+                                error={errors.password} />
                         </Grid>
                         <Grid item xs={12}>
                             <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>Login</Button>

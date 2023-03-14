@@ -4,7 +4,10 @@ import { FormProduct } from "../components/FormProduct";
 import { useNavigate } from "react-router-dom";
 import { ProductTable } from "../components/ProductTable";
 import { EnterpriseContext } from '../context/enterprises/EnterpriseContext';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import makeFetch from "../utils/fetch";
+import { Navbar } from "../components/Navbar";
 
 export const Enterprises = () => {
     const { token, enterprise, loadingEnterprise, setEnterprise } = useContext(EnterpriseContext);
@@ -53,19 +56,31 @@ export const Enterprises = () => {
 
     return (
         <div>
-            <h1>Enterprise</h1>
+            <Navbar />
+            <Typography variant="h4">My enterprise</Typography>
             {loadingEnterprise ? <h1>Loader</h1> : enterprise ?
                 <div>
-                    <h1>Nit: {enterprise.nit}</h1>
-                    <h1>Enterprise Name: {enterprise.name}</h1>
-                    <h1>Address: {enterprise.address}</h1>
-                    <h1>Phone: {enterprise.phone}</h1>
+                    <Grid container justify="space-between">
+                        <Typography inline variant="body1" align="left" fontWeight={'bold'}>Nit: </Typography>
+                        <Typography inline align="right" variant="body1"> {enterprise.nit}</Typography>
+                    </Grid>
+                    <Grid container justify="space-between">
+                        <Typography inline variant="body1" align="left" fontWeight={'bold'}>Enterprise Name: </Typography>
+                        <Typography inline align="right" variant="body1"> {enterprise.name}</Typography>
+                    </Grid>
+                    <Grid container justify="space-between">
+                        <Typography inline variant="body1" align="left" fontWeight={'bold'}>Address: </Typography>
+                        <Typography inline align="right" variant="body1"> {enterprise.address}</Typography>
+                    </Grid>
+                    <Grid container justify="space-between">
+                        <Typography inline variant="body1" align="left" fontWeight={'bold'}>Phone: </Typography>
+                        <Typography inline align="right" variant="body1"> {enterprise.phone}</Typography>
+                    </Grid>
                     {isEditing ? <FormEnterprise creating={false} initialValues={{ name: enterprise.name, address: enterprise.address, nit: enterprise.nit, phone: enterprise.phone }} /> : <button type="button" onClick={handleClickEdit}>Edit Enterprise</button>}
                     {!(isRemoving || isEditing || isCreating) && <button type="button" onClick={handleClickDelete}>Delete Enterprise</button>}
-                    <h1>Products</h1>
-                    <h1>Create Product</h1>
+                    <Typography variant="h4">Products</Typography>
+                    <Typography variant="h4">Create Product</Typography>
                     <FormProduct setNewProduct={setNewProduct} />
-                    <h1>Products Inventory</h1>
                     <ProductTable products={products} />
                 </div> :
                 <div>
