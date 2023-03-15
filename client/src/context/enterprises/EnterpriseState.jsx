@@ -14,7 +14,7 @@ import {
     REMOVE_ENTERPRISE,
     REMOVE_ENTERPRISE_ERROR
 } from '../../constants/index';
-const URL = import.meta.env.VITE_API_URL;
+const URL = process.env.VITE_API_URL;
 
 export const EnterpriseState = (props) => {
     const initialState = {

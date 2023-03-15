@@ -1,4 +1,4 @@
-const URL = import.meta.env.VITE_API_URL;
+const URL = process.env.VITE_API_URL;
 
 export default function makeFetch(token, method, route, body) {
     try {
