@@ -9,7 +9,7 @@ import { EnterprisesList } from "./pages/EnterprisesList";
 
 const router = createBrowserRouter([
     {
-        path: "/login",
+        path: "/",
         element: <Login />,
     },
     {

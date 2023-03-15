@@ -80,6 +80,11 @@ export const Register = () => {
                         <Grid item xs={12}>
                             <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>SignUp</Button>
                         </Grid>
+                        <Grid item>
+                            <Link onClick={() => navigate(`/`)} variant="body2">
+                                Already have an account? Sign in
+                            </Link>
+                        </Grid>
                     </Grid>
                 </Form>
             )}

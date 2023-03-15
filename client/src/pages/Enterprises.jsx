@@ -21,7 +21,7 @@ export const Enterprises = () => {
 
     useEffect(() => {
         if (!token) {
-            navigate(`/login`);
+            navigate(`/`);
         }
     }, []);
 

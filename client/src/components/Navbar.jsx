@@ -169,7 +169,7 @@ export const Navbar = () => {
                 <MenuItem key={setting} onClick={() => {
                   handleCloseUserMenu();
                   removeToken();
-                  navigate(`/login`);
+                  navigate(`/`);
                 }}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>

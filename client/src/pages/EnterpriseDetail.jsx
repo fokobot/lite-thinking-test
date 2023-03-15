@@ -26,7 +26,7 @@ export const EnterprisesDetail = (props) => {
 
     useEffect(() => {
         if (!token) {
-            navigate(`/login`);
+            navigate(`/`);
         }
     }, []);
 

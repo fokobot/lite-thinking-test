@@ -60,6 +60,11 @@ export const Login = () => {
                         <Grid item xs={12}>
                             <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>Login</Button>
                         </Grid>
+                        <Grid item>
+                            <Link onClick={() => navigate(`/register`)} variant="body2">
+                                Don&apos;t have an account? Sign Up
+                            </Link>
+                        </Grid>
                     </Grid>
                 </Form>
             )}

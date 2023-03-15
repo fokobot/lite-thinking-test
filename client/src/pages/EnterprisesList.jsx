@@ -13,7 +13,7 @@ export const EnterprisesList = () => {
 
     useEffect(() => {
         if (!token) {
-            navigate(`/login`);
+            navigate(`/`);
         }
     }, []);
 
