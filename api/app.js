@@ -9,12 +9,12 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: 'https://classy-puffpuff-00dcc3.netlify.app'
 }));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 
-const uri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongodb:27017/docker-db?authSource=admin`;
+const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.qxwrl.mongodb.net/docker-db?retryWrites=true&w=majority`;
 mongoose.connect(uri,
     { useNewUrlParser: true, useUnifiedTopology: true }
 )

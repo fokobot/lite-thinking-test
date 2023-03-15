@@ -14,7 +14,7 @@ import {
     REMOVE_ENTERPRISE,
     REMOVE_ENTERPRISE_ERROR
 } from '../../constants/index';
-const URL = process.env.VITE_API_URL;
+const URL = "https://ec2-100-25-37-66.compute-1.amazonaws.com:4000/";
 
 export const EnterpriseState = (props) => {
     const initialState = {

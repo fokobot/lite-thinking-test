@@ -1,4 +1,4 @@
-const URL = process.env.VITE_API_URL;
+const URL = "https://ec2-100-25-37-66.compute-1.amazonaws.com:4000/";
 
 export default function makeFetch(token, method, route, body) {
     try {

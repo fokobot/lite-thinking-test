@@ -101,7 +101,13 @@ export const Navbar = () => {
                     navigate(`/enterprises`);
                   }
                 }}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography onClick={() => {
+                    if (page === "My Enterprise") {
+                      navigate(`/user/enterprise`);
+                    } else {
+                      navigate(`/enterprises`);
+                    }
+                  }} textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
