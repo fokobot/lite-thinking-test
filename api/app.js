@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: 'https://classy-puffpuff-00dcc3.netlify.app'
+  origin: 'http://lite-thinking-client-test-fo.s3-website-us-east-1.amazonaws.com'
 }));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
