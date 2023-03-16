@@ -45,7 +45,6 @@ export const EnterprisesDetail = (props) => {
         enterpriseResponse
             .then(response => response.json())
             .then(response => {
-                console.log(response.data);
                 setEnterprise(response.data);
             })
     }, []);
