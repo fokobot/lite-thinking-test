@@ -6,6 +6,8 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import * as Yup from 'yup';
 import Link from "@mui/material/Link";
 
@@ -42,53 +44,69 @@ export const Register = () => {
     }
 
     return (
-        <Formik
-            initialValues={{
-                name: '',
-                email: '',
-                password: '',
-                passwordConfirmation: ''
-            }}
-            validationSchema={SignupSchema}
-            onSubmit={handleSubmit}
+        <Grid
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justify="center"
+            style={{ minHeight: '100vh' }}
         >
-            {({ errors, touched, handleChange, handleSubmit }) => (
-                <Form>
-                    <Grid container spacing={3} alignItems="center" direction={'column'}>
-                        <Grid item xs={12}>
-                            <Typography variant="h4">Sign Up</Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField onChange={handleChange} name="name" label="Name"
-                                helperText={touched.name && errors.name}
-                                error={touched.name && errors.name} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField onChange={handleChange} name="email" label="Email"
-                                helperText={touched.email && errors.email}
-                                error={touched.email && errors.email} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField onChange={handleChange} name="password" type="password" label="Password"
-                                helperText={touched.password && errors.password}
-                                error={touched.password && errors.password} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField onChange={handleChange} name="passwordConfirmation" type="password" label="Password Confirmation"
-                                helperText={touched.passwordConfirmation && errors.passwordConfirmation}
-                                error={touched.passwordConfirmation && errors.passwordConfirmation} />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>SignUp</Button>
-                        </Grid>
-                        <Grid item>
-                            <Link onClick={() => navigate(`/`)} variant="body2">
-                                Already have an account? Sign in
-                            </Link>
-                        </Grid>
-                    </Grid>
-                </Form>
-            )}
-        </Formik>
+
+            <Grid item xs={3}>
+                <Card className="vertical-center">
+                    <CardContent>
+                        <Formik
+                            initialValues={{
+                                name: '',
+                                email: '',
+                                password: '',
+                                passwordConfirmation: ''
+                            }}
+                            validationSchema={SignupSchema}
+                            onSubmit={handleSubmit}
+                        >
+                            {({ errors, touched, handleChange, handleSubmit }) => (
+                                <Form>
+                                    <Grid container spacing={3} alignItems="center" direction={'column'}>
+                                        <Grid item xs={12}>
+                                            <Typography variant="h4">Sign Up</Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField onChange={handleChange} name="name" label="Name"
+                                                helperText={touched.name && errors.name}
+                                                error={touched.name && errors.name} />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField onChange={handleChange} name="email" label="Email"
+                                                helperText={touched.email && errors.email}
+                                                error={touched.email && errors.email} />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField onChange={handleChange} name="password" type="password" label="Password"
+                                                helperText={touched.password && errors.password}
+                                                error={touched.password && errors.password} />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField onChange={handleChange} name="passwordConfirmation" type="password" label="Password Confirmation"
+                                                helperText={touched.passwordConfirmation && errors.passwordConfirmation}
+                                                error={touched.passwordConfirmation && errors.passwordConfirmation} />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Button onClick={handleSubmit} type="submit" variant="contained" fullWidth>SignUp</Button>
+                                        </Grid>
+                                        <Grid item>
+                                            <Link onClick={() => navigate(`/`)} variant="body2">
+                                                Already have an account? Sign in
+                                            </Link>
+                                        </Grid>
+                                    </Grid>
+                                </Form>
+                            )}
+                        </Formik>
+                    </CardContent>
+                </Card>
+            </Grid>
+        </Grid>
     );
 };

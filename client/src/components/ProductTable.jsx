@@ -9,8 +9,8 @@ import Paper from '@mui/material/Paper';
 
 export const ProductTable = ({ products }) => {
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableContainer sx={{ m: 2 }} component={Paper}>
+            <Table aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableCell>Name</TableCell>
@@ -25,8 +25,8 @@ export const ProductTable = ({ products }) => {
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                             <TableCell component="th" scope="row">{product.name}</TableCell>
-                            <TableCell align="right">{product.price}</TableCell>
-                            <TableCell align="right">{product.quantity}</TableCell>
+                            <TableCell>{product.price}</TableCell>
+                            <TableCell>{product.quantity}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

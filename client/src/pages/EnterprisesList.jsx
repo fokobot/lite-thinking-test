@@ -1,9 +1,12 @@
 import React from 'react';
 import { useEffect, useState, useContext } from 'react';
-import { FormEnterprise } from "../components/FormEnterprise";
 import { useNavigate } from "react-router-dom";
 import { EnterpriseContext } from "../context/enterprises/EnterpriseContext";
 import { Navbar } from "../components/Navbar";
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import makeFetch from '../utils/fetch';
 
 export const EnterprisesList = () => {
@@ -29,18 +32,34 @@ export const EnterprisesList = () => {
     }
 
     return (
-        <div>
+        <Grid>
             <Navbar />
-            <h1>Enterprise</h1>
+            <Typography sx={{ ml: 2, mt: 2 }} variant="h4">Enterprise List</Typography>
             {enterprises.map(enterprise => {
                 return (
-                    <card key={enterprise._id} onClick={() => handleClick(enterprise._id)}>
-                        <h1>{enterprise.name} - {enterprise.nit}</h1>
-                        <p>{enterprise.address}</p>
-                        <p>{enterprise.phone}</p>
-                    </card>);
+                    <Card sx={{
+                        m: 2, ':hover': {
+                            boxShadow: 20,
+                        }
+                    }} key={enterprise._id} onClick={() => handleClick(enterprise._id)}>
+                        <CardContent>
+                            <Grid>
+                                <Grid container justify="space-between">
+                                    <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>{enterprise.name} - Nit: {enterprise.nit}</Typography>
+                                </Grid>
+                                <Grid container justify="space-between">
+                                    <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>Address:&nbsp;</Typography>
+                                    <Typography inline="true" align="right" variant="body1">{enterprise.address}</Typography>
+                                </Grid>
+                                <Grid container justify="space-between">
+                                    <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>Phone:&nbsp;</Typography>
+                                    <Typography inline="true" align="right" variant="body1">{enterprise.phone}</Typography>
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>);
             })}
 
-        </div>
+        </Grid>
     );
 };

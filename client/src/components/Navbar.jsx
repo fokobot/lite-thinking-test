@@ -129,13 +129,20 @@ export const Navbar = () => {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            Lite Thinking Test
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => {
+                  handleCloseNavMenu();
+                  if (page === "My Enterprise") {
+                    navigate(`/user/enterprise`);
+                  } else {
+                    navigate(`/enterprises`);
+                  }
+                }}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}

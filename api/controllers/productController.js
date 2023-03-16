@@ -25,7 +25,7 @@ exports.getAllProducts = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            error
+            error: error.message
         })
     }
 }
@@ -34,20 +34,27 @@ exports.createProduct = async (req, res) => {
     try {
         const enterprise = await Enterprise.findOne({ user: req.user.id });
         if (enterprise) {
-            const product = new Product({
-                _id: new mongoose.Types.ObjectId(),
-                name: req.body.name,
-                quantity: req.body.quantity,
-                price: req.body.price,
-                enterprise: enterprise._id
-            });
-
-            let result = await product.save();
-            console.log(result);
-            res.status(201).json({
-                message: 'Product created sucesfully',
-                data: result
-            });
+            const productEqualName = await Product.findOne({ enterprise: enterprise._id, name: req.body.name });
+            if (!productEqualName) {
+                const product = new Product({
+                    _id: new mongoose.Types.ObjectId(),
+                    name: req.body.name,
+                    quantity: req.body.quantity,
+                    price: req.body.price,
+                    enterprise: enterprise._id
+                });
+    
+                let result = await product.save();
+                console.log(result);
+                res.status(201).json({
+                    message: 'Product created sucesfully',
+                    data: result
+                });
+            } else {
+                res.status(400).json({
+                    message: 'There is a product in this enterprise with that name!'
+                });
+            }
         } else {
             res.status(404).json({
                 message: 'The user does not have a enterprise!'
@@ -56,7 +63,7 @@ exports.createProduct = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            error: error
+            error: error.message
         })
     }
 }
@@ -77,7 +84,7 @@ exports.getProdutsByEnterprise = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            error: error
+            error: error.message
         });
     }
 }
@@ -101,7 +108,7 @@ exports.updateProduct = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            error: error
+            error: error.message
         });
     }
 
@@ -110,12 +117,12 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
     try {
         const id = req.params.productId;
-        let result = await Product.remove({ _id: id })
+        let result = await Product.deleteOne({ _id: id })
         res.status(200).json({ message: "Product deleted sucessfully", data: result });
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: error
+            error: error.message
         })
     }
 }
@@ -151,7 +158,7 @@ exports.generatePDF = async (req, res) => {
                     secretAccessKey: process.env.SECRET_ACCESS_KEY,
                 });
 
-                let bucket = `lite-thinking-test-fo`;
+                let bucket = process.env.BUCKET_NAME;
 
                 const paramsPdf = {
                     Key: `${id}.pdf`,
@@ -162,7 +169,7 @@ exports.generatePDF = async (req, res) => {
                 await S3.upload(paramsPdf).promise();
                 let pdfUrl = S3.getSignedUrl("getObject", { Bucket: bucket, Key: `${id}.pdf`, Expires: 3600 });
                 if (req.body.email) {
-                    await sendEmailWithAttachmentBase64(req.body.email, appDir + `/${id}.pdf`);
+                    await sendEmailWithAttachmentBase64(process.env.EMAIL_FROM, req.body.email, appDir + `/${id}.pdf`);
                 }
                 res.status(200).json({
                     message: `PDF generated successfully`,
@@ -177,12 +184,12 @@ exports.generatePDF = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            error: error
+            error: error.message
         });
     }
 }
 
-async function sendEmailWithAttachmentBase64(emailTo, attachments) {
+async function sendEmailWithAttachmentBase64(emailFrom, emailTo, attachments) {
     let ses = new AWS.SES({
         region: 'us-east-1',
         accessKeyId: process.env.ACCESS_KEY_ID,
@@ -193,7 +200,7 @@ async function sendEmailWithAttachmentBase64(emailTo, attachments) {
     });
     try {
         let data = await transporter.sendMail({
-            from: `fabian.osorio.990628@gmail.com`,
+            from: emailFrom,
             to: emailTo,
             subject: "Products Inventory",
             html: "<html><head></head><body><p>Please see the attached file for a list of products inventory.</p></body></html >",

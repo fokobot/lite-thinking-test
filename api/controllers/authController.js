@@ -50,10 +50,10 @@ exports.login = async (req, res) => {
     if (error) return res.status(400).json({ error: error.details[0].message })
 
     const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).json({ error: 'Usuario no encontrado' });
+    if (!user) return res.status(400).json({ error: 'User not found' });
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) return res.status(400).json({ error: 'contraseña no válida' })
+    if (!validPassword) return res.status(400).json({ error: 'Invalid password' })
 
     const token = jwt.sign({
         name: user.name,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import makeFetch from '../utils/fetch';
 import { EnterpriseContext } from "../context/enterprises/EnterpriseContext";
@@ -13,6 +13,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 const SedPDFSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Required')
@@ -21,6 +25,7 @@ const SedPDFSchema = Yup.object().shape({
 export const EnterprisesDetail = (props) => {
     const [products, setProducts] = useState([]);
     const { token } = useContext(EnterpriseContext);
+    const [enterprise, setEnterprise] = useState({});
     const { enterpriseId } = useParams();
     const navigate = useNavigate();
 
@@ -35,6 +40,14 @@ export const EnterprisesDetail = (props) => {
         response
             .then(response => response.json())
             .then(response => setProducts(response.data))
+
+        let enterpriseResponse = makeFetch(token, 'GET', `enterprises/detail/${enterpriseId}`);
+        enterpriseResponse
+            .then(response => response.json())
+            .then(response => {
+                console.log(response.data);
+                setEnterprise(response.data);
+            })
     }, []);
 
     const handleClickPDF = () => {
@@ -52,24 +65,48 @@ export const EnterprisesDetail = (props) => {
     }
 
     return (
-        <div>
+        <Grid>
             <Navbar />
-            <button type="button" onClick={handleClickPDF}>Generate PDF!</button>
-            <Formik
-                initialValues={{
-                    email: ''
-                }}
-                validationSchema={SedPDFSchema}
-                onSubmit={handleSubmitPDF}
-            >
-                {({ errors, touched }) => (
-                    <Form>
-                        <Field name="email" type="email" placeholder="Email to send PDF" />
-                        {errors.email && touched.email ? <div>{errors.email}</div> : null}
-                        <button type="submit">Send PDF</button>
-                    </Form>
-                )}
-            </Formik>
+            <Grid container justify="space-between">
+                <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>Nit:&nbsp;</Typography>
+                <Typography inline="true" align="right" variant="body1">{enterprise.nit}</Typography>
+            </Grid>
+            <Grid container justify="space-between">
+                <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>Enterprise Name:&nbsp;</Typography>
+                <Typography inline="true" align="right" variant="body1">{enterprise.name}</Typography>
+            </Grid>
+            <Grid container justify="space-between">
+                <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>Address:&nbsp;</Typography>
+                <Typography inline="true" align="right" variant="body1">{enterprise.address}</Typography>
+            </Grid>
+            <Grid container justify="space-between">
+                <Typography sx={{ ml: 2 }} inline="true" variant="body1" align="left" fontWeight={'bold'}>Phone:&nbsp;</Typography>
+                <Typography inline="true" align="right" variant="body1">{enterprise.phone}</Typography>
+            </Grid>
+            <Grid sx={{ m: 2, display: 'block' }}>
+                <Button onClick={handleClickPDF} variant="contained">Generate PDF</Button>
+            </Grid>
+            <Grid sx={{ my: 2 }}>
+                <Formik
+                    initialValues={{
+                        email: ''
+                    }}
+                    validationSchema={SedPDFSchema}
+                    onSubmit={handleSubmitPDF}
+                >
+                    {({ errors, touched, handleChange, handleBlur, handleSubmit }) => (
+                        <Form>
+                            <Grid justify="space-between" item xs={12}>
+                                <TextField inline="true" onChange={handleChange} name="email" type="email" variant="filled" label="Email to send PDF"
+                                    onBlur={handleBlur}
+                                    helperText={touched.email && errors.email}
+                                    error={touched.email && errors.email} />
+                                <Button sx={{ mx: 1 }} inline="true" onClick={handleSubmit} type="submit" variant="contained">Send PDF</Button>
+                            </Grid>
+                        </Form>
+                    )}
+                </Formik>
+            </Grid>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -93,6 +130,6 @@ export const EnterprisesDetail = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </Grid>
     );
 };

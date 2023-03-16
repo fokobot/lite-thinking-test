@@ -8,6 +8,8 @@ router.post('/', EnterprisesController.createEnterprise);
 
 router.get('/:userId', EnterprisesController.getEnterpriseByUser);
 
+router.get('/detail/:enterpriseId', EnterprisesController.getEnterpriseDetail);
+
 router.patch('/:enterpriseId', EnterprisesController.updateEnterprise);
 
 router.delete('/:enterpriseId', EnterprisesController.deleteEnterprise);

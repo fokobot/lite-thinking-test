@@ -71,6 +71,27 @@ exports.getEnterpriseByUser = async (req, res) => {
     }
 }
 
+exports.getEnterpriseDetail = async (req, res) => {
+    try {
+        const id = req.params.enterpriseId;
+        let enterprise = await Enterprise.findOne({ _id: id });
+        if (enterprise) {
+            res.status(200).json({
+                data: enterprise
+            });
+        } else {
+            res.status(404).json({
+                message: 'No valid entry found for provided ID'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            error: error
+        });
+    }
+}
+
 exports.updateEnterprise = async (req, res) => {
     try {
         const id = req.params.enterpriseId;
@@ -82,7 +103,6 @@ exports.updateEnterprise = async (req, res) => {
         }, {
             new: true
         });
-        console.log(result);
         res.status(200).json({
             message: `Enterprise ${id} updated sucesfully`,
             data: result,
@@ -99,8 +119,8 @@ exports.updateEnterprise = async (req, res) => {
 exports.deleteEnterprise = async (req, res) => {
     try {
         const id = req.params.enterpriseId;
-        let result = await Enterprise.remove({ _id: id });
-        await Product.remove({ enterprise: id });
+        let result = await Enterprise.deleteOne({ _id: id });
+        await Product.deleteMany({ enterprise: id });
         res.status(200).json({ message: "Enterprise deleted sucessfully", data: result });
     } catch (error) {
         console.log(error)

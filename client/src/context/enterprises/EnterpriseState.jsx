@@ -1,20 +1,18 @@
-import React, { useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { EnterpriseContext } from './EnterpriseContext';
 import { EnterpriseReducer } from './EnterpriseReducer';
 import {
+    SET_INIT,
     SET_TOKEN,
-    SET_TOKEN_ERROR,
     REMOVE_TOKEN,
     SET_ENTERPRISE,
-    SET_ENTERPRISE_ERROR,
     CREATE_ENTERPRISE,
-    CREATE_ENTERPRISE_ERROR,
     EDIT_ENTERPRISE,
-    EDIT_ENTERPRISE_ERROR,
-    REMOVE_ENTERPRISE,
-    REMOVE_ENTERPRISE_ERROR
+    REMOVE_ENTERPRISE
 } from '../../constants/index';
-const URL = "http://ec2-100-25-37-66.compute-1.amazonaws.com:4000/";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+const URL = import.meta.env.VITE_API_URL || "http://ec2-100-25-37-66.compute-1.amazonaws.com:4000/";
 
 export const EnterpriseState = (props) => {
     const initialState = {
@@ -24,7 +22,40 @@ export const EnterpriseState = (props) => {
         loadingEnterprise: true
     };
 
+    const notify = (message) => toast.error(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    });
+
     const [state, dispatch] = useReducer(EnterpriseReducer, initialState);
+
+    // useEffect(() => {
+    //     let token = localStorage.getItem('token');
+    //     let user = JSON.parse(localStorage.getItem('user'));
+    //     let enterprise = JSON.parse(localStorage.getItem('enterprise'));
+    //     dispatch({
+    //         type: SET_INIT,
+    //         payload: { token, user, enterprise }
+    //     });
+    // }, []);
+
+    // useEffect(() => {
+    //     return () => {
+    //         localStorage.setItem('token', state.token);
+    //         if (state.user) {
+    //             localStorage.setItem('user', JSON.stringify(state.user));
+    //         }
+    //         if (state.enterprise) {
+    //             localStorage.setItem('enterprise', JSON.stringify(state.enterprise));
+    //         }
+    //     }
+    // }, [state]);
 
     const setToken = async (data) => {
         try {
@@ -57,13 +88,10 @@ export const EnterpriseState = (props) => {
                     payload: tokenData.data
                 });
             } else {
-                throw new Error(tokenData);
+                throw new Error(tokenData.error);
             }
         } catch (error) {
-            dispatch({
-                type: SET_TOKEN_ERROR,
-                payload: error
-            });
+            notify(error.message);
         }
     }
 
@@ -86,13 +114,10 @@ export const EnterpriseState = (props) => {
                     payload: enterprise.data
                 });
             } else {
-                throw new Error(enterprise);
+                throw new Error(enterprise.error);
             }
         } catch (error) {
-            dispatch({
-                type: SET_ENTERPRISE_ERROR,
-                payload: error
-            });
+            // notify(error.message);
         }
     }
 
@@ -110,13 +135,10 @@ export const EnterpriseState = (props) => {
                     payload: enterprise.data
                 });
             } else {
-                throw new Error(enterprise);
+                throw new Error(enterprise.error);
             }
         } catch (error) {
-            dispatch({
-                type: CREATE_ENTERPRISE_ERROR,
-                payload: error
-            });
+            notify(error.message);
         }
     }
 
@@ -134,13 +156,10 @@ export const EnterpriseState = (props) => {
                     payload: enterprise.data
                 });
             } else {
-                throw new Error(enterprise);
+                throw new Error(enterprise.error);
             }
         } catch (error) {
-            dispatch({
-                type: EDIT_ENTERPRISE_ERROR,
-                payload: error
-            });
+            notify(error.message);
         }
     }
 
@@ -156,13 +175,10 @@ export const EnterpriseState = (props) => {
                     type: REMOVE_ENTERPRISE
                 });
             } else {
-                throw new Error(enterprise);
+                throw new Error(enterprise.error);
             }
         } catch (error) {
-            dispatch({
-                type: REMOVE_ENTERPRISE_ERROR,
-                payload: error
-            });
+            notify(error.message);
         }
     }
 
@@ -181,6 +197,18 @@ export const EnterpriseState = (props) => {
                 removeEnterprise
             }}
         >
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
             {props.children}
         </EnterpriseContext.Provider>
     );

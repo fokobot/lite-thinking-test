@@ -9,17 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: 'http://lite-thinking-client-test-fo.s3-website-us-east-1.amazonaws.com'
+  origin: ["http://localhost:5173", "http://lite-thinking-client-test-fo.s3-website-us-east-1.amazonaws.com"]
 }));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 
 const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.qxwrl.mongodb.net/docker-db?retryWrites=true&w=majority`;
 mongoose.connect(uri,
-    { useNewUrlParser: true, useUnifiedTopology: true }
+  { useNewUrlParser: true, useUnifiedTopology: true }
 )
-.then(() => console.log('Base de datos conectada'))
-.catch(error => console.log('Error en DB: ', error));
+  .then(() => console.log('Base de datos conectada'))
+  .catch(error => console.log('Error en DB: ', error));
 
 const authRoutes = require('./routes/authRouter');
 const productRoutes = require('./routes/productRouter');
